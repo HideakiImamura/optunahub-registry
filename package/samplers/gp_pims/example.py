@@ -10,8 +10,11 @@ def f(x: np.ndarray) -> float:
 
 
 if __name__ == "__main__":
-    mod = optunahub.load_module(
-        package="samplers/gp_pims",
+    # mod = optunahub.load_module(
+    #     package="samplers/gp_pims",
+    # )
+    mod = optunahub.load_local_module(
+        "/mnt/nfs-mnj-home-43/mamu/optunahub-registry/package/samplers/gp_pims",
     )
 
     PIMSSampler = mod.PIMSSampler
@@ -26,12 +29,9 @@ if __name__ == "__main__":
         "y": optuna.distributions.FloatDistribution(0, 1),
     }
 
-    kernel_bounds = np.array([[1e-3, 1e-3], [1e3, 1e3]])
-    sampler = PIMSSampler(search_space=search_space, kernel_bounds=kernel_bounds)
+    sampler = PIMSSampler(search_space=search_space)
     study = optuna.create_study(sampler=sampler, direction="maximize")
-    # study = optuna.create_study(sampler=sampler)
     study.optimize(objective, n_trials=20)
-    # optuna.visualization.plot_optimization_history(study)
 
     fig = optuna.visualization.plot_optimization_history(study)
     fig.write_image("optuna_history.png")
